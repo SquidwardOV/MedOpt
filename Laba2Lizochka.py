@@ -17,9 +17,13 @@ def convex_triplet(u_a, u_b, u_c):
 
 # Основной алгоритм поиска минимума с использованием параболической интерполяции
 def modified_minimizer(lb, ub, delta):
-    # Выбираем начальную точку в середине интервала
-    #x0 = (lb + ub) / 2.0
+    # Запрашиваем начальное приближение x0 у пользователя
     x0 = float(input("Введите начальное приближение x0: "))
+    # Если введена граничная точка, корректируем x0 так, чтобы он находился строго внутри интервала
+    if x0 <= lb:
+        x0 = lb + delta
+    elif x0 >= ub:
+        x0 = ub - delta
 
     # Обеспечиваем условие: delta < (ub - lb)/2
     if delta >= (ub - lb) / 2:
@@ -46,7 +50,6 @@ def modified_minimizer(lb, ub, delta):
         x2 = x0 - 2 * delta
         # Перезаписываем список кандидатов в возрастающем порядке
         samples = [x2, x1, x0]
-
     samples.append(x2)
 
     # Генерируем последующие точки с экспоненциальным увеличением шага
@@ -96,9 +99,6 @@ if __name__ == "__main__":
 
     print("Найденный минимум:")
     print(f"u* ≈ {optimum:.6f}, f(u*) ≈ {opt_val:.6f}")
-    if parab_vertex is not None:
-        print(f"Параболическая вершина: {parab_vertex:.6f}")
-    print("Список кандидатов:", [f"{pt:.6f}" for pt in candidates])
 
     # Подготовка данных для графика
     x_grid = np.linspace(lower - 0.5, upper + 0.5, 400)
@@ -113,11 +113,11 @@ if __name__ == "__main__":
         plt.text(pt, objective(pt), f" {idx}", fontsize=9, color='brown')
 
     # Итоговый минимум отображаем зелёным квадратом
-    plt.plot(optimum, opt_val, 'gs', markersize=10, label='Лучший минимум')
+    plt.plot(optimum, opt_val, 'gs', markersize=10, label='Найденная точка минимума')
 
     plt.xlabel("u")
     plt.ylabel("objective(u)")
-    plt.title("Модифицированный алгоритм поиска минимума (версия 2)")
+    plt.title("График функции с найденной точкой минимума")
     plt.legend()
     plt.grid(True)
     plt.show()
